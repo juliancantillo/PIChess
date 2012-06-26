@@ -40,6 +40,10 @@ public class Game extends JFrame implements ActionListener{
         if(e.getSource() == menu.NewGame()){
             gameboard.newGame();
         }
+        if(e.getSource() == menu.getReset()){
+            gameboard.resetField();
+        }
+        
     }
     
 }

@@ -67,10 +67,10 @@ public class Board extends JComponent implements Runnable, MouseListener, MouseM
     public Board() {
         alphabeta [0] = -3000.0f;
         
-        newGame();
-
         initializePieces();
         initializeBoard();
+        
+        newGame();
     }
 
     public final void initializeBoard() {
@@ -97,13 +97,7 @@ public class Board extends JComponent implements Runnable, MouseListener, MouseM
 
         square = new JPanel[8][8];
 
-        for (int i = 21; i < 99; i++) {
-            buildFields(i);
-            paintField(i);
-            if (i % 10 == 8) {
-                i += 2;
-            }
-        }
+        buildFields();
 
         this.add(layeredPane);
 
@@ -128,13 +122,32 @@ public class Board extends JComponent implements Runnable, MouseListener, MouseM
 
     }
 
-    public void buildFields(int index) {
+    public void buildFields() {
+        
+        int x, y, index;
+        
+        for (int i = 21; i < 99; i++) {
+            
+            index = i;
+            
+            x = (index - 21) % 10;
+            y = (index - 21) / 10;
 
-        int x = (index - 21) % 10;
-        int y = (index - 21) / 10;
-
-        square[x][y] = new JPanel(new BorderLayout());
-        chessBoard.add(square[x][y]);
+            square[x][y] = new JPanel(new BorderLayout());
+            
+            if ((x * 11 + y) % 2 == 0) {
+                square[x][y].setBackground(Color.BLACK);
+            } else {
+                square[x][y].setBackground(Color.WHITE);
+            }
+            
+            chessBoard.add(square[x][y]);
+        
+            if (i % 10 == 8) {
+                i += 2;
+            }
+        
+        }
     }
 
     public void paintField(int index) {
@@ -149,7 +162,9 @@ public class Board extends JComponent implements Runnable, MouseListener, MouseM
         } else {
             square[x][y].setBackground(Color.WHITE);
         }
-
+        
+        square[x][y].removeAll();
+        
         try {
             square[x][y].add(new JLabel(pieces[graphboard[index] % 100 - 10]));
         } catch (ArrayIndexOutOfBoundsException e) {
@@ -177,6 +192,8 @@ public class Board extends JComponent implements Runnable, MouseListener, MouseM
             x = (index - 21) % 10;
             y = (index - 21) / 10;
 
+            square[x][y].removeAll();
+            
             try {
                 square[x][y].add(new JLabel(pieces[graphboard[index] % 100 - 10]));
             } catch (ArrayIndexOutOfBoundsException e) {
@@ -214,6 +231,8 @@ public class Board extends JComponent implements Runnable, MouseListener, MouseM
             board[i] = initial[i];
             graphboard[i] = initial[i];
         }
+        
+        setPiecesLocation();
         
         movecounter = 0;
 	color = 1;	
@@ -361,6 +380,7 @@ public class Board extends JComponent implements Runnable, MouseListener, MouseM
                 } else {
                     square[x][y].setBackground(Board.RED);
                 }
+                
             }
 
             alt = end;
@@ -397,7 +417,7 @@ public class Board extends JComponent implements Runnable, MouseListener, MouseM
         execute(move / 100, move % 100);
 
         //give accesss to the movelist
-        code = 0;
+        code = 0;        
     }
 
     public float evaluation() {
@@ -490,6 +510,8 @@ public class Board extends JComponent implements Runnable, MouseListener, MouseM
             th = new Thread(this);
             th.setPriority(10);
             th.start();
+            
+            
 
         } else {
             color = 1;
